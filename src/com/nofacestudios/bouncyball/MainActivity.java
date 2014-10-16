@@ -1,6 +1,7 @@
 package com.nofacestudios.bouncyball;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.andengine.audio.music.Music;
 import org.andengine.engine.Engine;
@@ -10,14 +11,13 @@ import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
-import org.andengine.entity.primitive.DrawMode;
-import org.andengine.entity.primitive.Mesh;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
-import org.andengine.entity.text.Text;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.ui.activity.BaseGameActivity;
-import org.andengine.util.adt.color.Color;
+
+import android.util.Log;
 
 public class MainActivity extends BaseGameActivity {
 
@@ -88,7 +88,7 @@ public class MainActivity extends BaseGameActivity {
 		rm.loadFonts(mEngine);
 		// Load the sound resources
 		rm.loadSounds(mEngine, this);
-		
+
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 	}
 	
@@ -96,7 +96,19 @@ public class MainActivity extends BaseGameActivity {
 	public void onCreateScene(OnCreateSceneCallback pOnCreateSceneCallback)
 			throws IOException {
 		// Create the Scene object
-		mScene = new Scene();
+		mScene = new Scene(){
+			@Override
+			protected void onManagedUpdate(float pSecondsElapsed) {
+				TerrainManager tm = TerrainManager.getInstance();
+				if(tm.isTerrainGenerationEnabled()){
+					if(!tm.hasInitiated()){
+						tm.initTerrainGeneration(mEngine);
+					}
+					TerrainManager.getInstance().moveTerrains(mEngine);
+				}
+				super.onManagedUpdate(pSecondsElapsed);
+			}
+		};
 		// Notify the callback that we're finished creating the scene, returning
 		// mScene to the mEngine object (handled automatically)
 		pOnCreateSceneCallback.onCreateSceneFinished(mScene);	
@@ -106,90 +118,36 @@ public class MainActivity extends BaseGameActivity {
 	public void onPopulateScene(Scene pScene,
 			OnPopulateSceneCallback pOnPopulateSceneCallback) {
 		
-		// Set the raw points for our rectangle mesh
-		float baseBuffer[] = {
-				// Triangle one
-				-200, -100, 0, // point one
-				200, -100, 0, // point two
-				200, 100, 0, // point three
-				
-				// Triangle two
-				200, 100, 0, // point one
-				-200, 100, 0, // point two
-				-200, -100, 0 // point three
-		};
-		// Create the base mesh at the bottom of the screen
-		Mesh meshBase = new Mesh(400, 480 - 100, baseBuffer, 6, DrawMode.TRIANGLES, mEngine.getVertexBufferObjectManager());
-
-		// Set the meshes color to a 'brown' color
-		meshBase.setColor(0.45f, 0.164f, 0.3f);
-		// Attach base mesh to the scene
-		mScene.attachChild(meshBase);
-		
-		// Create the raw points for our triangle mesh
-		float roofBuffer[] = {
-				// Triangle
-				-300, 0, 0, // point one
-				0, -200, 0, // point two
-				300, 0, 0, // point three
-		};
-		
-		// Create the roof mesh above the base mesh
-		Mesh meshRoof = new Mesh(400, 480 - 200, roofBuffer, 3, DrawMode.TRIANGLES, mEngine.getVertexBufferObjectManager());
-		
-		meshRoof.setColor(Color.RED);
-		// Attach the roof to the scene
-		mScene.attachChild(meshRoof);
-		
-		
-		// Create the raw points for our line mesh
-		float doorBuffer[] = {
-				-25, -100, 0, // point one
-				25, -100, 0, // point two
-				25, 0, 0, // point three
-				-25, 0, 0, // point four
-				-25, -100, 0 // point five
-		};
-		
-		// Create the door mesh
-		Mesh meshDoor = new Mesh(400, 480, doorBuffer, 5, DrawMode.LINE_STRIP, mEngine.getVertexBufferObjectManager());
-		
-		meshDoor.setColor(Color.BLUE);
-		// Attach the door to the scene
-		mScene.attachChild(meshDoor);
+		int x = 5;
+		AnimatedSprite mBallAnimatedSprite = new AnimatedSprite(CAMERA_WIDTH/2, CAMERA_HEIGHT/3, 
+				ResourceManager.getInstance().mBallTiledTextureRegion,
+				getVertexBufferObjectManager()){
 			
-		final float positionX = CAMERA_WIDTH * 0.5f;
-		final float positionY = CAMERA_HEIGHT * 0.5f;
-		/* Add our marble sprite to the bottom left side of the Scene
-		initially */
-		Sprite mCharacterSprite = new Sprite(positionX, positionY,
-				ResourceManager.getInstance().mCharacterSpriteTextureRegion, mEngine.getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
 					float pTouchAreaLocalX, float pTouchAreaLocalY) {
-				ResourceManager
-				.getInstance()
-				.mSound
-				.play();
+				GameManager.getInstance().startGame();
+				Log.d("helo","hi");
 				return super
 						.onAreaTouched(pSceneTouchEvent, pTouchAreaLocalX, pTouchAreaLocalY);
 			}
+			@Override
+			protected void onManagedUpdate(float pSecondsElapsed) {
+				super.onManagedUpdate(pSecondsElapsed);
+			}
 		};
+		Log.d("hi","hello");
+		mScene.attachChild(mBallAnimatedSprite);
+		mScene.registerTouchArea(mBallAnimatedSprite);
+		
+		mBallAnimatedSprite.animate(100, true);
+		
+		ResourceManager.getInstance().mGroundTextureRegion.setTextureSize(CAMERA_WIDTH, 100);
+		Sprite mGroundSprite = new Sprite(CAMERA_WIDTH/2, 
+				ResourceManager.getInstance().mGroundTextureRegion.getHeight()/2
+				, ResourceManager.getInstance().mGroundTextureRegion, getVertexBufferObjectManager());		
 
-		/* The last step is to attach our Sprite to the Scene, as is
-		necessary in order to display any type of Entity on the device's
-		display: */
-		/* Attach the marble to the Scene */
-		mScene.attachChild(mCharacterSprite);
-		mScene.registerTouchArea(mCharacterSprite);
-		
-		Text mSampleText = new Text(CAMERA_WIDTH/2, CAMERA_HEIGHT/2, 
-				ResourceManager.getInstance().mFont,
-				"Hello World!", 
-				getVertexBufferObjectManager());
-		
-		mScene.attachChild(mSampleText);
-		
+		mScene.attachChild(mGroundSprite);
 		
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 	}

@@ -37,6 +37,11 @@ public class GameManager {
 		mBirdCount -= 1;
 	}
 	
+	public void startGame(){
+		this.resetGame();
+		TerrainManager.getInstance().setTerrainGenerationEnabled(true);
+	}
+	
 	// Resetting the game simply means we must revert back to initial values.
 	public void resetGame(){
 		this.mCurrentScore = GameManager.INITIAL_SCORE;

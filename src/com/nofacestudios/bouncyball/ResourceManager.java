@@ -9,6 +9,7 @@ import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.Engine;
 import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
@@ -16,6 +17,7 @@ import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSourc
 import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.region.ITextureRegion;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.util.debug.Debug;
 
 import android.content.Context;
@@ -32,6 +34,9 @@ public class ResourceManager {
 	public ITextureRegion mGameBackgroundTextureRegion;
 	public ITextureRegion mMenuBackgroundTextureRegion;
 	public ITextureRegion mCharacterSpriteTextureRegion;
+	public ITextureRegion mBallTextureRegion;
+	public ITextureRegion mGroundTextureRegion;
+	public ITiledTextureRegion mBallTiledTextureRegion;
 	
 	public Sound mSound;
 
@@ -60,13 +65,35 @@ public class ResourceManager {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
 
 		BuildableBitmapTextureAtlas mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(pEngine.getTextureManager(), 800, 480 + TEXTURE_ATLAS_SOURCE_PADDING*2);
-
+		
 		mGameBackgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, pContext, "background.png");
 		mCharacterSpriteTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, pContext, "character.png");
+		mBallTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, pContext, "ball.png");
+	
+		BuildableBitmapTextureAtlas mBitmapTextureAtlasRepeating = new BuildableBitmapTextureAtlas(
+				pEngine.getTextureManager(),
+				128, 32,
+				TextureOptions.REPEATING_BILINEAR);
+		mGroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlasRepeating, pContext, "ground.png");
+
+		BuildableBitmapTextureAtlas mBallTiledBitmapTextureAtlas = 
+				new BuildableBitmapTextureAtlas(
+						pEngine.getTextureManager(), 
+						520, 269);
 		
+		mBallTiledTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+				mBallTiledBitmapTextureAtlas, 
+				pContext, 
+				"ball_tiled.png", 
+				8, 
+				4);
 		try {
 			mBitmapTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource,BitmapTextureAtlas>(0, 1, TEXTURE_ATLAS_SOURCE_PADDING));
 			mBitmapTextureAtlas.load();
+			mBitmapTextureAtlasRepeating.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource,BitmapTextureAtlas>(0, 0, 0));
+			mBitmapTextureAtlasRepeating.load();
+			mBallTiledBitmapTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource,BitmapTextureAtlas>(0, 0, 0));
+			mBallTiledBitmapTextureAtlas.load();
 		} catch (TextureAtlasBuilderException e) {
 			Debug.e(e);
 		}
