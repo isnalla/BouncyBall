@@ -118,8 +118,17 @@ public class MainActivity extends BaseGameActivity {
 	public void onPopulateScene(Scene pScene,
 			OnPopulateSceneCallback pOnPopulateSceneCallback) {
 		
-		int x = 5;
-		AnimatedSprite mBallAnimatedSprite = new AnimatedSprite(CAMERA_WIDTH/2, CAMERA_HEIGHT/3, 
+		
+		ResourceManager.getInstance().mGroundTextureRegion.setTextureSize(CAMERA_WIDTH, 100);
+		Sprite mGroundSprite = new Sprite(CAMERA_WIDTH/2, 
+				ResourceManager.getInstance().mGroundTextureRegion.getHeight()/2
+				, ResourceManager.getInstance().mGroundTextureRegion, getVertexBufferObjectManager());		
+
+		mScene.attachChild(mGroundSprite);
+		
+		
+		
+		Ball ball = new Ball(CAMERA_WIDTH / 2, (float) (CAMERA_HEIGHT / 2),
 				ResourceManager.getInstance().mBallTiledTextureRegion,
 				getVertexBufferObjectManager()){
 			
@@ -136,18 +145,20 @@ public class MainActivity extends BaseGameActivity {
 				super.onManagedUpdate(pSecondsElapsed);
 			}
 		};
-		Log.d("hi","hello");
-		mScene.attachChild(mBallAnimatedSprite);
-		mScene.registerTouchArea(mBallAnimatedSprite);
-		
-		mBallAnimatedSprite.animate(100, true);
-		
-		ResourceManager.getInstance().mGroundTextureRegion.setTextureSize(CAMERA_WIDTH, 100);
-		Sprite mGroundSprite = new Sprite(CAMERA_WIDTH/2, 
-				ResourceManager.getInstance().mGroundTextureRegion.getHeight()/2
-				, ResourceManager.getInstance().mGroundTextureRegion, getVertexBufferObjectManager());		
 
-		mScene.attachChild(mGroundSprite);
+		ball.setGround(mGroundSprite);
+		ball.setCameraDimensions(CAMERA_WIDTH, CAMERA_HEIGHT);
+
+		ball.animate(25, true);
+		
+
+	
+		Log.d("hi","hello");
+		mScene.attachChild(ball);
+		mScene.registerTouchArea(ball);
+		
+		
+
 		
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 	}
