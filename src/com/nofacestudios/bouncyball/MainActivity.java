@@ -24,6 +24,8 @@ public class MainActivity extends BaseGameActivity {
 	private static final float CAMERA_HEIGHT = 480;
 	private Scene mScene;
 	
+	private BallAccelerationManager ballAccelManager;
+	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		// Define our mCamera object
@@ -39,7 +41,10 @@ public class MainActivity extends BaseGameActivity {
 		engineOptions.setWakeLockOptions(WakeLockOptions.SCREEN_ON);
 		engineOptions.getAudioOptions().setNeedsMusic(true);
 		engineOptions.getAudioOptions().setNeedsSound(true);
+
+		ballAccelManager = new BallAccelerationManager(this);
 		// Return the engineOptions object, passing it to the engine
+		
 		return engineOptions;
 	}
 	
@@ -49,6 +54,8 @@ public class MainActivity extends BaseGameActivity {
 		if(mMusic != null && !mMusic.isPlaying()){
 			mMusic.play();
 		}
+
+		this.enableAccelerationSensor(ballAccelManager);
 		super.onResumeGame();
 	}
 	
@@ -61,6 +68,7 @@ public class MainActivity extends BaseGameActivity {
 		if(mMusic != null && mMusic.isPlaying()){
 			mMusic.pause();
 		}
+		this.disableAccelerationSensor();
 		super.onPauseGame();
 	}
 	
