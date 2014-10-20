@@ -1,19 +1,18 @@
 package com.nofacestudios.bouncyball;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.andengine.audio.music.Music;
 import org.andengine.engine.Engine;
-import org.andengine.engine.FixedStepEngine;
+import org.andengine.engine.LimitedFPSEngine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.WakeLockOptions;
 import org.andengine.engine.options.resolutionpolicy.FillResolutionPolicy;
 import org.andengine.entity.scene.Scene;
-import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.ui.activity.BaseGameActivity;
 
@@ -68,7 +67,7 @@ public class MainActivity extends BaseGameActivity {
 	@Override
 	public Engine onCreateEngine(EngineOptions pEngineOptions) {
 		// Create a fixed step engine updating at 60 steps per second
-		return new FixedStepEngine(pEngineOptions, 60);
+		return new LimitedFPSEngine(pEngineOptions, 60);
 	}
 	
 	@Override
@@ -88,6 +87,8 @@ public class MainActivity extends BaseGameActivity {
 		rm.loadFonts(mEngine);
 		// Load the sound resources
 		rm.loadSounds(mEngine, this);
+		
+		this.mEngine.registerUpdateHandler(new FPSLogger());
 
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 	}

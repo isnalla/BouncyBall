@@ -10,14 +10,10 @@ public class Ball extends AnimatedSprite{
 	private Sprite mGroundSprite;
 	private float camera_width, camera_height;
 	
-	
 	public Ball(float pX, float pY, ITiledTextureRegion pTiledTextureRegion, VertexBufferObjectManager vertexBufferObjectManager) {
 		super(pX, pY, pTiledTextureRegion,
 				vertexBufferObjectManager);
 		// TODO Auto-generated constructor stub
-		
-		
-		
 	}
 	
 	public void setGround(Sprite mGroundSprite){
