@@ -24,7 +24,19 @@ public class BallAccelerationManager implements IAccelerationListener {
 	public void onAccelerationChanged(AccelerationData pAccelerationData) {
 		// TODO Auto-generated method stub
 		
-//		pAccelerationData.getX()
+		TerrainManager tm =TerrainManager.getInstance(); 
+		long accel = (long) pAccelerationData.getX();
+		long normalSpeed = TerrainManager.INITIAL_MOVE_SPEED;
+		long minSpeed = (long) (normalSpeed * 0.5);
+		long maxSpeed = (long) (normalSpeed * 2.0);
+
+		long speed = normalSpeed + accel;
+		
+		
+		if (speed < minSpeed) speed = minSpeed;
+		if (speed > maxSpeed) speed = maxSpeed;
+		
+		tm.setMoveSpeed(speed );
 	}
 	
 }

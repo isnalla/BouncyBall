@@ -12,7 +12,7 @@ public class TerrainManager {
 	private boolean mInitiated;
 	private List<Terrain> mTerrains;
 	private long mMoveSpeed; 
-	private static final long INITIAL_MOVE_SPEED = 3;
+	public static final long INITIAL_MOVE_SPEED = 7;
 	
 	TerrainManager(){
 		mTerrainGenerationEnabled = false;

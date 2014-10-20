@@ -134,7 +134,7 @@ public class MainActivity extends BaseGameActivity {
 		//generate initial blank terrain
 		TerrainManager.getInstance().generateTerrain(mEngine);
 		
-		Ball ball = new Ball(CAMERA_WIDTH / 2, (float) (CAMERA_HEIGHT / 2),
+		Ball ball = new Ball(CAMERA_WIDTH / 3, (float) (CAMERA_HEIGHT / 2),
 				ResourceManager.getInstance().mBallTiledTextureRegion,
 				getVertexBufferObjectManager()){
 			

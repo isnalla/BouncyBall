@@ -2,9 +2,11 @@ package com.nofacestudios.bouncyball;
 
 import java.util.List;
 
+import org.andengine.engine.camera.Camera;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
+import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 public class Ball extends AnimatedSprite{
@@ -23,25 +25,32 @@ public class Ball extends AnimatedSprite{
 		float y = this.getY();
 		
 		ySpeed += gravity;
+
+	
+		y = (float) (y-ySpeed);
+		this.setY(y);
 		
 		collidedObject = checkForCollision();
 		
 		if(collidedObject instanceof Terrain){
 			ySpeed = bounce;
-			
-			float ballBottom = y - getHeight()/2;
+
 			Sprite collidedObjectSprite = ((Terrain) collidedObject).getSprite();
 			float landTop = collidedObjectSprite.getY() + collidedObjectSprite.getHeight()/2;
-//			ySpeed -= (collidedObjectSprite.getY() + collidedObjectSprite.getHeight()/2) - ((y - this.getHeight()/2) - ySpeed);
 
 			y = (landTop + getHeight()/2 + 2);
 		}
-		y = (float) (y-ySpeed);
-		
 		
 		this.setY(y);
+		
 		super.onManagedUpdate(pSecondsElapsed);
 
+	}
+	
+	@Override
+	protected void onManagedDraw(GLState pGLState, Camera pCamera) {
+		// TODO Auto-generated method stub
+		super.onManagedDraw(pGLState, pCamera);
 	}
 	
 	private Object checkForCollision(){
