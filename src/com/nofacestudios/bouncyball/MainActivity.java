@@ -100,12 +100,16 @@ public class MainActivity extends BaseGameActivity {
 		mScene = new Scene(){
 			@Override
 			protected void onManagedUpdate(float pSecondsElapsed) {
+				//Move terrains every scene update
 				TerrainManager tm = TerrainManager.getInstance();
 				if(tm.isTerrainGenerationEnabled()){
+					//create terrains if non-existent
 					if(!tm.hasInitiated()){
 						tm.initTerrainGeneration(mEngine);
+					}//else move terrains as usual
+					else{
+						TerrainManager.getInstance().moveTerrains(mEngine);
 					}
-					TerrainManager.getInstance().moveTerrains(mEngine);
 				}
 				super.onManagedUpdate(pSecondsElapsed);
 			}
@@ -119,15 +123,8 @@ public class MainActivity extends BaseGameActivity {
 	public void onPopulateScene(Scene pScene,
 			OnPopulateSceneCallback pOnPopulateSceneCallback) {
 		
-		
-		ResourceManager.getInstance().mGroundTextureRegion.setTextureSize(CAMERA_WIDTH, 100);
-		Sprite mGroundSprite = new Sprite(CAMERA_WIDTH/2, 
-				ResourceManager.getInstance().mGroundTextureRegion.getHeight()/2
-				, ResourceManager.getInstance().mGroundTextureRegion, getVertexBufferObjectManager());		
-
-		mScene.attachChild(mGroundSprite);
-		
-		
+		//generate initial blank terrain
+		TerrainManager.getInstance().generateTerrain(mEngine);
 		
 		Ball ball = new Ball(CAMERA_WIDTH / 2, (float) (CAMERA_HEIGHT / 2),
 				ResourceManager.getInstance().mBallTiledTextureRegion,
@@ -147,19 +144,11 @@ public class MainActivity extends BaseGameActivity {
 			}
 		};
 
-		ball.setGround(mGroundSprite);
-		ball.setCameraDimensions(CAMERA_WIDTH, CAMERA_HEIGHT);
-
 		ball.animate(25, true);
 		
 
-	
-		Log.d("hi","hello");
 		mScene.attachChild(ball);
 		mScene.registerTouchArea(ball);
-		
-		
-
 		
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 	}
